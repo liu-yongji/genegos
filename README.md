@@ -53,5 +53,5 @@ Important!
      cause things to break in subtle ways, mostly when Genegos handles
      fork/exec calls.
 
-  2. Do not change any file in the folder Genegos-chains. This will
+  2. Do not change any file in the folder named Genegos-chains. This will
       cause convertion errors.
