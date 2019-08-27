@@ -1,5 +1,5 @@
 # genegos
-Efficiency tool  specifically for converting genome coordinate from  GRCh37 to GRCh38.
+Efficient tool  specifically for converting genome coordinate from  GRCh37 to GRCh38.
 
 Overview
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
