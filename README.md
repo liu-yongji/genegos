@@ -39,7 +39,7 @@ Learn and Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Running Genegos
 
-> genegos [GRCh37 files] [Destination path] [path of Genegos-chains]
+> genegos [GRCh37 BED or VCF] [Destination path] [path of Genegos-chains]
 
 for example: 
 >genegos ./test/test37.bed ./ ./Genegos-chains
