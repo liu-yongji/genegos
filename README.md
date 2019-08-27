@@ -50,8 +50,7 @@ Important!
 
   1. Do not move the Genegos installation into a place
      different from that specified by --prefix at build time.  This will
-     cause things to break in subtle ways, mostly when Genegos handles
-     fork/exec calls.
+     cause things to break in subtle ways.
 
   2. Do not change any file in the folder named Genegos-chains. This will
       cause convertion errors.
