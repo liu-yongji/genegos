@@ -1,14 +1,14 @@
 # genegos
-Efficient tool  specifically for converting genome coordinate from  GRCh37 to GRCh38.
+Efficiency tool  specifically for converting genome coordinate from  GRCh37 to GRCh38.
 
-Overview
+##Overview
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Here we present a faster and efficient tool named Genegos specifically for converting 
 genome coordinate from  GRCh37 to GRCh38.
 
 Building and installing Genegos
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To install from a tar.gz distribution:
+#To install from a tar.gz distribution:
 
   1. Run ./configure, with some options if you wish.  The only interesting
      one is the usual --prefix=/where/you/want/it/installed.
@@ -20,7 +20,7 @@ To install from a tar.gz distribution:
 		 Either this works, or it bombs out with some complaint.  
 		 In that case, please let us know.
    
- Follow the installation instructions there or issue the following commands:
+ #Follow the installation instructions there or issue the following commands:
  
     wget https://raw.githubusercontent.com/liu-yongji/genegos/master/genegos-1.0.0.tar.gz
 
@@ -35,7 +35,7 @@ To install from a tar.gz distribution:
     make install
 
     
-Learn and Support
+##Learn and Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Running Genegos
 
@@ -45,7 +45,7 @@ for example:
 >genegos ./test/test37.bed ./ ./Genegos-chains
 
 
-Important!  
+#Important!  
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   1. Do not move the Genegos installation into a place
