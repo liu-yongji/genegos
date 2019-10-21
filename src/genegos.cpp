@@ -18,10 +18,10 @@
 #define CHR_NUM 24
 
 using namespace  std;
-struct SNPBag // ´æ´¢Ã»ÓĞ¶ÔÆëµÄ°ü
+struct SNPBag // å­˜å‚¨æ²¡æœ‰å¯¹é½çš„åŒ…
 {
-	int nPos ; //¶ÔÓ¦Î»ÖÃ
-	string sInfo; //È«²¿ĞÅÏ¢
+	int nPos ; //å¯¹åº”ä½ç½®
+	string sInfo; //å…¨éƒ¨ä¿¡æ¯
 };
 struct InitBag
 {
@@ -78,8 +78,8 @@ public:
 	FILE *p_indel;
 	char *pStart;
 	long nlen;
-	string sResult; // ¼ÇÂ¼ÓĞĞ§×ª»»
-	string sFail;   // ¼ÇÂ¼Î´ÄÜ×ª»»µÄ¼ÇÂ¼
+	string sResult; // è®°å½•æœ‰æ•ˆè½¬æ¢
+	string sFail;   // è®°å½•æœªèƒ½è½¬æ¢çš„è®°å½•
 	CmySection *makeUp;
 	
 	THREAD_FILEMMAP_ARG()
@@ -111,7 +111,7 @@ typedef  pair<map<string,SNPBag>::iterator,bool> Map_RS_Ret;
 
 /*****************************************************************************
 ** Function:     to_string(int _Val)
-**  À©Õ¹string <int> // Ô­ÒòÊÇ<string> ¿âÀïÃæÃ»ÓĞ
+**  æ‰©å±•string <int> // åŸå› æ˜¯<string> åº“é‡Œé¢æ²¡æœ‰
 ** Create Date:  2018.7.17
 ** Modify Time:  2018.7.17
 ** Author:        LYJ
@@ -135,7 +135,7 @@ int stoi(string str)
 
 /*****************************************************************************
 ** Function:    is_xxx_exist(string sFilename)
-** ÅĞ¶ÏÎÄ¼ş»òÕßÂ·¾¶ÊÇ·ñ´æÔÚ
+** åˆ¤æ–­æ–‡ä»¶æˆ–è€…è·¯å¾„æ˜¯å¦å­˜åœ¨
 ** Create Date:  2018.7.17
 ** Modify Time:  2018.7.17
 ** Author:        LYJ
@@ -164,7 +164,7 @@ bool is_dir_exist(string sDir)
  
 /*****************************************************************************
 ** Function:    GetPosSectionMakeUp(int nSpos,CmySection makeUp)
-**   // GRCh37 °æ±¾ pos ×ª 38 °æ±¾Î»ÖÃ  CmySection ÊÇ×Ô¼º×é×°µÄÊı¾İ½á¹¹
+**   // GRCh37 ç‰ˆæœ¬ pos è½¬ 38 ç‰ˆæœ¬ä½ç½®  CmySection æ˜¯è‡ªå·±ç»„è£…çš„æ•°æ®ç»“æ„
 ** Create Date:  2018.7.17
 ** Modify Time:  2018.7.17
 ** Author:        LYJ
@@ -193,7 +193,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp)
 				nRe = it->second.nDesStart - nDif; 
 			break;
 		}
-		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)  //³¬³ö·¶Î§ ËµÃ÷Ã»ÓĞÕÒµ½Çø¼ä Ò²¾ÍÊÇËµ Á½¸ö°æ±¾Î»ÖÃ´í¿ªÁË
+		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)  //è¶…å‡ºèŒƒå›´ è¯´æ˜æ²¡æœ‰æ‰¾åˆ°åŒºé—´ ä¹Ÿå°±æ˜¯è¯´ ä¸¤ä¸ªç‰ˆæœ¬ä½ç½®é”™å¼€äº†
 		{
 			break;
 		}
@@ -206,7 +206,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp)
 
 /*****************************************************************************
 ** Function:   GetMakeupChain(string chianFile,std::map<int,ChainBag> &map_Chain)
-** chianFile £º²Î¿¼¶ÔÕÕ¹ØÏµÎÄ¼ş
+** chianFile ï¼šå‚è€ƒå¯¹ç…§å…³ç³»æ–‡ä»¶
 ** Create Date:  2018.8.20
 ** Modify Time:  
 ** Author:        LYJ
@@ -238,7 +238,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 		if (np2 == -1)
 			continue;
 		nCount ++;
-		if (str_Line.find("<1v1>") != -1) // Ò»¶ÔÒ»µÄ¹ØÏµ
+		if (str_Line.find("<1v1>") != -1) // ä¸€å¯¹ä¸€çš„å…³ç³»
 		{
 			np1 = str_Line.find("<1v1>");
 			string srcStart = str_Line.substr(0,np1);
@@ -282,7 +282,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 		np1 = np2 +1;
 		int nED = stoi(sDesEnd);
 		//c_bag.nDesEnd = nED;
-		if ((nStart == c_bag.nSrcEnd +1)&&((!c_bag.bReverse && nES == c_bag.nDesEnd +1)||(c_bag.bReverse && nES == c_bag.nDesEnd -1) ))// ËµÃ÷ÊÇÁ¬ÆğÀ´µÄ
+		if ((nStart == c_bag.nSrcEnd +1)&&((!c_bag.bReverse && nES == c_bag.nDesEnd +1)||(c_bag.bReverse && nES == c_bag.nDesEnd -1) ))// è¯´æ˜æ˜¯è¿èµ·æ¥çš„
 		{
 			c_bag.nSrcEnd = nSEND;
 			c_bag.nDesEnd = nED;
@@ -310,11 +310,11 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			c_bag.nDesEnd = nED;
 		}
 
-		}// Çø¼ä¹ØÏµ
+		}// åŒºé—´å…³ç³»
 		
-	}  //end while  Ìô³öËùÓĞµÄ¶ÔÓ¦¹ØÏµ ²¢×öÁËÅÅĞò
+	}  //end while  æŒ‘å‡ºæ‰€æœ‰çš„å¯¹åº”å…³ç³» å¹¶åšäº†æ’åº
 
-	MapRet ret = map_Chain.insert(std::make_pair(c_bag.nSrcStart,c_bag)); // ×îºóÒ»Ìõ
+	MapRet ret = map_Chain.insert(std::make_pair(c_bag.nSrcStart,c_bag)); // æœ€åä¸€æ¡
 	if (!ret.second)
 	{
 		cout<<"insert error"<<endl;
@@ -327,7 +327,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 
 /*****************************************************************************
 ** Function:      bWritResult
-** ½«CHR VCFÎÄ¼ş ÌáÈ¡µ½µÄĞÅÏ¢ÖØĞÂĞ´Èë
+** å°†CHR VCFæ–‡ä»¶ æå–åˆ°çš„ä¿¡æ¯é‡æ–°å†™å…¥
 ** Create Date:  2018.7.04
 ** Modify Time:  2018.7.04
 ** Author:        LYJ
@@ -351,7 +351,7 @@ bool bWritResult(FILE * &pFile,string *pstrInfo)
 
 /*****************************************************************************
 ** Function:      Repalce_char(string& str,const string&old_value,const string& new_value)
-** str:  Ìæ»»×Ö·û´®ÖĞËùÓĞµÄÖ¸¶¨×Ö·û  ·µ»ØÌæ»»µÄ¸öÊı
+** str:  æ›¿æ¢å­—ç¬¦ä¸²ä¸­æ‰€æœ‰çš„æŒ‡å®šå­—ç¬¦  è¿”å›æ›¿æ¢çš„ä¸ªæ•°
 ** Create Date:  2018.7.05
 ** Modify Time:  2018.7.05
 ** Author:        LYJ
@@ -485,7 +485,7 @@ long GetFileSize(int fd)
 	    int nTCout = 0;
 	    int  nslen =0;
 	    int  nLine_len =0;
-	    int  nreflen =0;  // ±ê¼Çchr + pos ³¤¶È£»
+	    int  nreflen =0;  // æ ‡è®°chr + pos é•¿åº¦ï¼›
 	    string sPass = "";
 	    string sChr = "";
 	    string sPos = "";
@@ -493,7 +493,7 @@ long GetFileSize(int fd)
 	    string sLine = "";
 	    bool  bConvert = false;
 	    
-	    pBag->sResult.reserve(nlen*1.1); // ÉèÖÃºÃÎÄ¼şÄÚ´æÊ¹ÓÃ´óĞ¡
+	    pBag->sResult.reserve(nlen*1.1); // è®¾ç½®å¥½æ–‡ä»¶å†…å­˜ä½¿ç”¨å¤§å°
 	    
 	    char *pS = pChar;
 	    char *pStart_Line = pChar;
@@ -624,14 +624,14 @@ long GetFileSize(int fd)
 	    int nTCout = 0;
 	    int  nslen =0;
 	    int  nLine_len =0;
-	    int  nreflen =0;  // ±ê¼Çchr + pos ³¤¶È£»
+	    int  nreflen =0;  // æ ‡è®°chr + pos é•¿åº¦ï¼›
 	    string sPass = "";
 	    string sChr = "";
 	    string sPos = "";
 	    string sPosEnd = ""; // posend
 	    string sLine = "";
 	    bool  bConvert = false;
-	    pBag->sResult.reserve(nlen); // ÉèÖÃºÃÎÄ¼şÄÚ´æÊ¹ÓÃ´óĞ¡
+	    pBag->sResult.reserve(nlen); // è®¾ç½®å¥½æ–‡ä»¶å†…å­˜ä½¿ç”¨å¤§å°
 	    
 	    char *pS = pChar;
 	    char *pStart_Line = pChar;
@@ -646,7 +646,8 @@ long GetFileSize(int fd)
 	    				if(bConvert)
 	    					{
 	    						sLine.assign(pStart_REF, nLine_len-nreflen+1);
-	    						sLine = sChr + "\t" + sPos + "\t"  + sPosEnd + "\t" + sLine;
+	    						//sLine = sChr + "\t" + sPos + "\t"  + sPosEnd + "\t" + sLine;
+						        sLine = sChr + "\t" + sPos + "\t" + sLine;
 	    						pBag->sResult += sLine;
 	    					}
 	    				 else
@@ -762,7 +763,7 @@ bool Cnvt_37to38_File(string sSrcfile,string sSectionDir,string sDespath,string 
 	  close(fd);
 	///////////////////////////////////////////intital convert section/////////////////////////////////////
 	
-	for (int i= 0;i<24 ;i++)// 1µ½22ºÅ
+	for (int i= 0;i<24 ;i++)// 1åˆ°22å·
 	{
 		strSection = "chr"+ to_string(i+1) + "_convert.dat";
 		if (i == 22)
@@ -804,12 +805,12 @@ bool Cnvt_37to38_File(string sSrcfile,string sSectionDir,string sDespath,string 
 	{
 		sError = "Creat file error\n";
 		if (fclose (pFile) != 0)
-			perror("Error occurs when close file"); //±¨¸æÏàÓ¦´íÎó
+			perror("Error occurs when close file"); //æŠ¥å‘Šç›¸åº”é”™è¯¯
 		
 		return false;
 	}
-	//////////////////////////////////////////////////³õÊ¼»¯ÁÙ½çÇø///////////////////////////////////////////////////////////////
-	 long nPerThread = nFilesize/ ncpuNum; // Ã¿¸öÏß³Ì·ÖÒ»¿éÄÚ´æ
+	//////////////////////////////////////////////////åˆå§‹åŒ–ä¸´ç•ŒåŒº///////////////////////////////////////////////////////////////
+	 long nPerThread = nFilesize/ ncpuNum; // æ¯ä¸ªçº¿ç¨‹åˆ†ä¸€å—å†…å­˜
 	 long nLeft = nFilesize;
 	 char *pStart = mapped;
 	 long  nlen = 0;
@@ -902,7 +903,7 @@ int main(int arg,char *args[])
 	string strSrc = "";
 	string strDespath = "";
 	string serr = "";
-	///////////////////////////»ñÈ¡ÊäÈë²ÎÊı////////////////////////////////////////////////////
+	///////////////////////////è·å–è¾“å…¥å‚æ•°////////////////////////////////////////////////////
 	for(int i=0; i<arg; i++)
 	{
    	string sGet = args[i];
