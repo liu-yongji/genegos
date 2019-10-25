@@ -9,15 +9,13 @@ converting genome coordinate from  GRCh37 to GRCh38.
 Building and installing Genegos
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To install from a tar.gz distribution:
-
   1. Run "./configure", with option for alternative directory using --prefix=/where/you/want/it/installed.
   2. Run "make".
   3. Run "make install", possibly requires root permission.
   4. See if it works.  Try "genegos ./test/test37.bed ./ ./Genegos-chains".  
 
   Either this works, or it pops out with some complaints.  
-  In that case, please let us know.
-   
+  In that case, please let us know.  
  Follow the installation instructions there or use the following commands:
    > wget https://raw.githubusercontent.com/liu-yongji/genegos/master/genegos-1.0.0.tar.gz
    > tar -xvf genegos-1.0.0.tar.gz
@@ -33,7 +31,6 @@ Running Genegos
 
 For example: 
 >genegos ./test/test37.bed ./ ./Genegos-chains
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Important!  
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
