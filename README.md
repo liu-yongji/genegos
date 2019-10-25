@@ -10,7 +10,7 @@ Building and installing Genegos
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To install from a tar.gz distribution:
 
-  1. Run ./configure, with some options if you wish.  The only interesting
+  1. Run "./configure", with some options if you wish.  The only interesting
      one is the usual --prefix=/where/you/want/it/installed.
   2. Run "make".
   3. Run "make install", possibly as root if the destination permissions
