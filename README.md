@@ -28,6 +28,7 @@ Test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Running Genegos
 > genegos [GRCh37 BED or VCF] [Destination path] [path of Genegos-chains]
+> genegos [GRCh38 BED or VCF] [Destination path] [path of Genegos-chains] [-r]
 
 For example: 
 >genegos ./test/test37.bed ./ ./Genegos-chains
