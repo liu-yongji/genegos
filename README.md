@@ -23,6 +23,11 @@ To install from a tar.gz distribution:
    > ./configure
    > make
    > make install
+   
+ If meet something wrong you can ues the genegos in the folder:
+ > chmod +x genegos
+ 
+   
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
 Test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,6 +37,9 @@ Running Genegos
 
 For example: 
 >genegos ./test/test37.bed ./ ./Genegos-chains
+
+or 
+>./genegos ./test/test37.bed ./ ./GRCh37_To_GRCh38_genegos.chain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Important!  
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
