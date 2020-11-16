@@ -1290,12 +1290,16 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    					case 3:
 	    						{
 	    							sPosEnd.assign(pS,nslen);
-	    							if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
-	    							{
-			                pStart_REF = pChar;
-			                nreflen = nLine_len;
-			                bConvert = true;
-			              }
+								if(it != pChr_Sec->end())
+								{
+									if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
+	    							         {
+			                                                      pStart_REF = pChar;
+			                                                      nreflen = nLine_len;
+			                                                      bConvert = true;
+			                                                  }
+								}
+	    							
 	    						  break;
 	    						}
 	    					default:
@@ -1427,14 +1431,18 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    								  		Replace_char(s,"chr","");
 	    								  		it = pChr_Sec->find(s);
 	    								  	}    
-	    								}	
-	    								
-	    							if(bCoordinate(sChr,sPos,&it->second))
-	    							{
-			                pStart_REF = pChar;
-			                nreflen = nLine_len;
-			                bConvert = true;
-			              }
+	    								}
+								
+								if(it != pChr_Sec->end())
+								{
+									if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
+	    							         {
+			                                                      pStart_REF = pChar;
+			                                                      nreflen = nLine_len;
+			                                                      bConvert = true;
+			                                                  }
+								}
+	    						
 	    						  break;
 	    						}
 	    					default:
