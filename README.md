@@ -24,16 +24,16 @@ To install from a tar.gz distribution:
    > make
    > make install
    
- If meet something wrong download and ues the genegos.demo dircetly:
+ If meet something wrong ,please download and ues the genegos.demo dircetly:
  > chmod +x genegos.demo
- >./genegos.demo  [GRCh37 BED or VCF] [Destination path] [path of Genegos-chains]
+ >./genegos.demo  [GRCh37 BED or VCF] [Destination path] [path of chains]
  
    
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
 Test
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Running Genegos
-> genegos [GRCh37 BED or VCF] [Destination path] [path of Genegos-chains]
+> genegos [GRCh37 BED or VCF] [Destination path] [path of chains]
 > genegos [GRCh38 BED or VCF] [Destination path] [path of Genegos-chains] [-r]
 
 For example: 
