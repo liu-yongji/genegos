@@ -51,4 +51,8 @@ Important!
      cause things to break in subtle ways.
   2. Do not change any file in the folder named Genegos-chains. This will
       cause conversion errors.
+  3. If the link in github does not work, please try another :
+     http://www.genegos.com/downloadtools/genegos_v1/genegos-1.0.0.tar.gz
+     
+     
 
