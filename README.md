@@ -25,7 +25,7 @@ To install from a tar.gz distribution:
    > make install
    
  If meet something wrong you can ues the genegos in the folder:
- > chmod +x genegos
+ > chmod +x genegos.demo
  
    
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
