@@ -24,7 +24,7 @@ To install from a tar.gz distribution:
    > make
    > make install
    
- If meet something wrong you can ues the genegos in the folder:
+ If meet something wrong you can ues the genegos.demo dircetly:
  > chmod +x genegos.demo
  
    
