@@ -42,7 +42,7 @@ genegos-style chain file mode
 
 or 
 stand chain file mode
->./genegos ./test/test37.bed ./ ./GRCh37_To_GRCh38_genegos.chain
+>./genegos ./test/test37.bed ./ ./hg19ToHg38.genegos.chain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Important!  
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
