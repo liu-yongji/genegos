@@ -17,22 +17,29 @@
 #include <error.h>
 #define _MAX_INT_DIG 32
 #define CHR_NUM 24
-
 using namespace  std;
+
+
+string sBed ="Convert genome coordinates (in bed format) between assemblies.  BED format: http://genome.ucsc.edu/FAQ/FAQformat.html#format1 \n";
+string sHelp = "Usage: ./genegos input_bed_file  output_folder  input_chain_file input_bed_file";
+string sExample = "Example: ./genegos ./test/test37.bed ./ ./hg19ToHg38.genegos.chain \nExample(Add RsID correction): ./genegos ./test/test37.bed ./ ./Genegos-chains\n";
 
 
 struct ChainBag
 {
 	bool bReverse;
+	//bool bHasSun; 
 	int  nSrcStart;
 	int  nSrcEnd;
 	int  nDesStart;
 	int  nDesEnd;
 	int  nSpanChr; 
 	string strDesChr;
+	//nSpanChr
 	ChainBag()
 	{
 		bReverse = false;
+		//bHasSun = false;
 		nSrcStart = -1;
 		nSrcEnd = -1;
 		nDesStart =-1;
@@ -43,6 +50,7 @@ struct ChainBag
 	~ChainBag()
 	{
 		bReverse = false;
+		//bHasSun = false;
 		nSrcStart = -1;
 		nSrcEnd = -1;
 		nDesStart =-1;
@@ -110,21 +118,21 @@ typedef std::map<string,std::map<int,ChainBag> >::iterator ChrChain_iterator;
 
 
 /*****************************************************************************
-** Function:     string2int(int _Val)
+** Function:     int2string(int _Val)
 ** Create Date:  2018.7.17
 ** Modify Time:  2018.7.17
 ** Author:        LYJ
-** Version:       1.0
+** Version:      1.0
 *******************************************************************************/
 
-string string2int(int _Val)
+string int2string(int _Val)
 {	
 	char _Buf[2 * _MAX_INT_DIG];
   snprintf(_Buf, sizeof(_Buf), "%d", _Val);
 	return (string(_Buf));
 }
 
-int stoi(string str)
+int str2int(string str)
 {
 	int num = atoi( str.c_str() );
 	return num;
@@ -150,7 +158,9 @@ int stoi(string str)
  
 bool is_dir_exist(string sDir)
  {
+ 	
  	  DIR *dirptr=opendir(sDir.c_str());
+ 	  
  	  if( NULL == dirptr)
  	  	return false;
  	  
@@ -170,8 +180,8 @@ bool is_dir_exist(string sDir)
 
 bool bWritResult(FILE * &pFile,string *pstrInfo)
 {
-	int nLen = pstrInfo->length();
-	int nWriten= 0;
+	size_t nLen = pstrInfo->length();
+	size_t nWriten= 0;
 	nWriten = fwrite (pstrInfo->c_str(), 1, nLen, pFile);
 
 	if (nLen != nWriten)
@@ -184,6 +194,7 @@ bool bWritResult(FILE * &pFile,string *pstrInfo)
 
 /*****************************************************************************
 ** Function:      Replace_char(string& str,const string&old_value,const string& new_value)
+** str: 替换字符串中所有的指定字符  返回替换的个数
 ** Create Date:  2018.7.05
 ** Modify Time:  2018.7.05
 ** Author:        LYJ
@@ -222,13 +233,6 @@ int Replace_char(string &str,const string &old_value,const string& new_value)
 	return nRe;
 }
 
-/*****************************************************************************
-** Function:     getCurrentPath(string &sPath )
-** Create Date:  2018.7.05
-** Modify Time:  2018.7.05
-** Author:        LYJ
-** Version:       1.0
-*******************************************************************************/
 bool  getCurrentPath(string &sPath )
 {
 	char current_path[1024]; 
@@ -251,13 +255,7 @@ bool  getCurrentPath(string &sPath )
   return true;
 }
 
-/*****************************************************************************
-** Function:     GetFileSize(string sfname)
-** Create Date:  2018.7.05
-** Modify Time:  2018.7.05
-** Author:        LYJ
-** Version:       1.0
-*******************************************************************************/
+
 long GetFileSize(string sfname)
 {
 	 int fd;  
@@ -283,16 +281,6 @@ long GetFileSize(int fd)
 	return sb.st_size;
 }
 
-
-/*****************************************************************************
-** Function:     GetChr(string strch)
-** return int  1~22 x:23 y=24
-** Create Date:  2018.7.05
-** Modify Time:  2018.7.05
-** Author:        LYJ
-** Version:       1.0
-*******************************************************************************/
-
  static int GetChr(string strch)
   {
   	Replace_char(strch,"chr","");
@@ -305,19 +293,10 @@ long GetFileSize(int fd)
 		else if (strch == "Y"||strch == "y")
 			return 24;
 		else
-			nNum = stoi(strch);
+			nNum = str2int(strch);
 	  
 	  return nNum;
   }
-  
-/*****************************************************************************
-** Function:     GetChr(int nChr)
-** return string  chr1~22  23:chrX   24:chrY
-** Create Date:  2018.7.05
-** Modify Time:  2018.7.05
-** Author:        LYJ
-** Version:       1.0
-*******************************************************************************/
   static string GetChr(int nChr)
   {
   	string strch = "chr";
@@ -327,23 +306,16 @@ long GetFileSize(int fd)
   	else if(nChr == 24)
   			strch = "chrY";
   	else
-  		  strch += string2int(nChr);
+  		  strch += int2string(nChr);
 	  return strch;
   }
   
-/*****************************************************************************
-** Function:     GetPos(string strPos)
-** return int  filter wrong format
-** Create Date:  2018.7.05
-** Modify Time:  2018.7.05
-** Author:        LYJ
-** Version:       1.0
-*******************************************************************************/
+
   static int GetPos(string strPos)
   {
   	if(strPos == "" || strPos.find_first_not_of("0123456789")!= -1)
   		return -1;
-		return stoi(strPos);
+		return str2int(strPos);
   }
  
  
@@ -351,7 +323,7 @@ long GetFileSize(int fd)
  
 /*****************************************************************************
 ** Function:    GetPosSectionMakeUp(int nSpos,CmySection makeUp)
-** return get mapping pos from target chain
+**   // GRCh37 版本 pos 转 38 版本位置  CmySection 是自己组装的数据结构
 ** Create Date:  2018.7.17
 ** Modify Time:  2018.7.17
 ** Author:        LYJ
@@ -380,7 +352,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp)
 				nRe = it->second.nDesStart - nDif; 
 			break;
 		}
-		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)
+		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)  //超出范围 说明没有找到区间 也就是说 两个版本位置错开了
 		{
 			break;
 		}
@@ -417,7 +389,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp,string &sDes
 				nRe = it->second.nDesStart - nSpos + it->first; 
 			break;
 		}
-		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)
+		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)//超出范围 说明没有找到区间 也就是说 两个版本位置错开了
 		{
 			break;
 		}
@@ -427,7 +399,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp,string &sDes
 
 }
 
-///////////////////////modify by lyj 11.22 to make sure stand chains 
+///////////////////////modify by lyj 11.22 to insure stand chains 
 static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp,string &sDesChr,bool &bRevs)
 {
 	int nRe = -1;
@@ -456,7 +428,7 @@ static inline int GetPosSectionMakeUp(int nSpos,CmySection *pmakeUp,string &sDes
 				nRe = it->second.nDesStart - nSpos + it->first; 
 			break;
 		}
-		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)
+		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)//超出范围 说明没有找到区间 也就是说 两个版本位置错开了
 		{
 			break;
 		}
@@ -480,7 +452,7 @@ static inline int GetPosSection(int nSpos,CmySection *pmakeUp)
 			nRe  = nSpos - it->first;
 			break;
 		}
-		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)
+		else if (nSpos <it->first && nSpos< it->second.nSrcEnd)//超出范围 说明没有找到区间 也就是说 两个版本位置错开了
 			break;
 
 	}
@@ -523,15 +495,15 @@ int GetMakeupChain_Reverse(string chianFile,std::map<int,int> &map_Chain_1v1,std
 		if (np2 == -1)
 			continue;
 		nCount ++;
-		if (str_Line.find("<1v1>") != -1) 
+		if (str_Line.find("<1v1>") != -1) // 一对一的关系
 		{
 			np1 = str_Line.find("<1v1>");
 			string src37 = str_Line.substr(0,np1);
-			int n37 = stoi(src37);
+			int n37 = str2int(src37);
 
 			np1 = str_Line.find(" ",np1+1);
 			string src38 =str_Line.substr(np1);
-			int n38 = stoi(src38);
+			int n38 = str2int(src38);
 			map_Chain_1v1.insert(make_pair(n38,n37));
 			continue;
 		}
@@ -539,39 +511,40 @@ int GetMakeupChain_Reverse(string chianFile,std::map<int,int> &map_Chain_1v1,std
 		{
 		   string srcStart37 = str_Line.substr(np1,np2-np1);
 		   np1 = np2 +1;
-		   int nStart37 = stoi(srcStart37);
+		   int nStart37 = str2int(srcStart37);
 		   ///////////////////////////////////////////////
 		   np2 = str_Line.find(" ",np1);
 		   string srcEnd37 = str_Line.substr(np1,np2-np1);
 		   np1 = np2 +1;
-		   int nSEND37 = stoi(srcEnd37);
+		   int nSEND37 = str2int(srcEnd37);
 
 			///////////////////////////////////////////////
 			np2 = str_Line.find(" ",np1);
 		  string sstrand = str_Line.substr(np1,np2-np1);
 	  	np1 = np2 +1;
+
 		  //////////////////////////////////////////////
 		  np2 = str_Line.find(" ",np1);
 		  string sDesStart38 = str_Line.substr(np1,np2-np1);
 		  np1 = np2 +1;
-		  int nES38 = stoi(sDesStart38);
+		  int nES38 = str2int(sDesStart38);
 
 		  np2 = str_Line.find(" ",np1);
 		  string sDesEnd38 = str_Line.substr(np1,np2-np1);
 		  np1 = np2 +1;
-		  int nED38 = stoi(sDesEnd38);
+		  int nED38 = str2int(sDesEnd38);
 		
 		  if (sstrand == "-")
 		  	{
 		  		c_bag.bReverse = true;
-		  		c_bag.nSrcStart = nED38;
+		  		c_bag.nSrcStart = nED38;    //小的在前，大的在后
 		      c_bag.nSrcEnd =  nES38;
-		      c_bag.nDesStart = nSEND37;
+		      c_bag.nDesStart = nSEND37;  // 大的在前，小的在后 
 		      c_bag.nDesEnd = nStart37;
 		  	}
 		  else
 		  	{		      
-		      c_bag.nSrcStart = nES38;
+		      c_bag.nSrcStart = nES38;   //小的在前，大的在后
 		      c_bag.nSrcEnd =  nED38;
 		      c_bag.nDesStart = nStart37;
 		      c_bag.nDesEnd = nSEND37;
@@ -582,9 +555,9 @@ int GetMakeupChain_Reverse(string chianFile,std::map<int,int> &map_Chain_1v1,std
 		   {
 			   map_Chain.insert(make_pair(c_bag.nSrcStart,c_bag));
 		   }
-		 }
+		 }// 区间关系
 		
-	}  //end while  
+	}  //end while  挑出所有的对应关系 并做了排序
 
 	ifs.close();
 	return nCount;
@@ -605,7 +578,10 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	ifstream ifs;
 	ifs.open(chianFile.c_str(),ios_base::in);
 	if (!ifs)
+	{
+		cout<<"Read File Error, please check file name is right: "<<chianFile<<endl;
 		return -1;
+	}
 
 	int np1 = 0;
 	int np2 = 0;
@@ -626,44 +602,45 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 		{
 			np1 = str_Line.find("<1v1>");
 			string srcStart = str_Line.substr(0,np1);
-			int nStart = stoi(srcStart);
+			int nStart = str2int(srcStart);
 
 			np1 = str_Line.find(" ",np1+1);
 			string srcEnd =str_Line.substr(np1);
-			int nSEND = stoi(srcEnd);
-			map_Chain_1v1.insert(make_pair(nStart,nSEND));
+			int nSEND = str2int(srcEnd);
+			//map_Chain_1v1.insert(make_pair(nStart,nSEND));
 			continue;
 		}
 		else
 		{
 		string srcStart = str_Line.substr(np1,np2-np1);
 		np1 = np2 +1;
-		int nStart = stoi(srcStart);
+		int nStart = str2int(srcStart);
 
 
-		/////////////////////////////////////////////
+		/////////////////////chain score//////////////////////////
 		np2 = str_Line.find(" ",np1);
 		string srcEnd = str_Line.substr(np1,np2-np1);
 		np1 = np2 +1;
-		int nSEND = stoi(srcEnd);
+		int nSEND = str2int(srcEnd);
+		//c_bag.nSrcEnd = nSEND;
 
-		////////////////////////////////////////////
+		/////////////////////chrName//////////////////////////
 		np2 = str_Line.find(" ",np1);
 		string sstrand = str_Line.substr(np1,np2-np1);
 		np1 = np2 +1;
 
-		////////////////////////////////////////////
+		/////////////////////chrsize//////////////////////////
 		np2 = str_Line.find(" ",np1);
 		string sDesStart = str_Line.substr(np1,np2-np1);
 		np1 = np2 +1;
-		int nES = stoi(sDesStart);
+		int nES = str2int(sDesStart);
 		//c_bag.nDesStart = nES;
 
-		////////////////////////////////////////////
+		//////////////////////strand/////////////////////////
 		np2 = str_Line.find(" ",np1);
 		string sDesEnd = str_Line.substr(np1,np2-np1);
 		np1 = np2 +1;
-		int nED = stoi(sDesEnd);
+		int nED = str2int(sDesEnd);
 		//c_bag.nDesEnd = nED;
 		if ((nStart == c_bag.nSrcEnd +1)&&((!c_bag.bReverse && nES == c_bag.nDesEnd +1)||(c_bag.bReverse && nES == c_bag.nDesEnd -1) ))// 说明是连起来的
 		{
@@ -693,14 +670,15 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			c_bag.nDesEnd = nED;
 		}
 
-		}
+		}// 区间关系
 		
-	}  //end while
+	}  //end while  挑出所有的对应关系 并做了排序
 
-	MapRet ret = map_Chain.insert(std::make_pair(c_bag.nSrcStart,c_bag)); 
+	MapRet ret = map_Chain.insert(std::make_pair(c_bag.nSrcStart,c_bag)); // 最后一条
 	if (!ret.second)
 	{
 		cout<<"insert error"<<endl;
+		//system("pause");
 	}
 
 	ifs.close();
@@ -731,7 +709,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
      if("" != sDesChr)
      	sChr = sDesChr;
      
-     sStart = string2int(nDesPos);
+     sStart = int2string(nDesPos);
     return true;
  	
  }
@@ -770,7 +748,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
      	{
      		 if(DesChr2 != "") {sChr = DesChr2;}
      		 //////////////////////////////////////////////////
-     		 if(nGap != abs(nPosStart-nPosEnd)) 
+     		 if(nGap != abs(nPosStart-nPosEnd)) //错开区间
      		 	{
      		 		 int nGapReal = GetPosSection(nt_start,pmakeUp) +1;
      		 		 if( nGapReal>=nGap )
@@ -783,15 +761,15 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
      		 	}
      		 	//////////////////////////////////////////////////
      		 
-     		 if(nPosStart > nPosEnd ) //
+     		 if(nPosStart > nPosEnd ) // 落到同一条染色体上
      		 {
      		 			nt_start = nPosStart;
      				  nPosStart = nPosEnd;
      				  nPosEnd = nt_start;
      		 }
      	}
-     	sStart = string2int(nPosStart);
-     	sDend  = string2int(nPosEnd);
+     	sStart = int2string(nPosStart);
+     	sDend  = int2string(nPosEnd);
     
     return true;
  	
@@ -807,9 +785,9 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	for (;npE != -1;)
 	{
 		npE = str.find(splt,npS);
-		if (npE == -1) 
+		if (npE == -1) // 最后的字串
 		{
-			strGet = str.substr(npS);
+			strGet = str.substr(npS);//最后
 			sL.push_back(strGet);
 			nRe++ ;
 			continue;
@@ -822,6 +800,8 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	return nRe;
 }
  
+
+
  bool bIintChains(string sChainFile,map<string,CmySection> *mapChr_Chains)
 {
 	ifstream ifs;
@@ -841,18 +821,22 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	CmySection sC;
 	mapChr_Chains_iterator ChainsIter;
 	vector<string> subDis;
+	int nline = 0;
 
 	while(!ifs.eof())  
 	{  
 		getline(ifs,str_Line);
+		nline ++;
 		if (str_Line == "\r" ||str_Line == "")
 			continue;
 		
 		if (str_Line.find("chain") != -1) // head
 		 {
+		 	//cout << str_Line << endl;
 			if( 0 == nSplitStr2List(str_Line,subDis," ")) //splited by 'space'
 				{
 					ifs.close();
+					cout << "Chain file error line " << nline << endl;
 	        return false;
 				}
 			
@@ -860,6 +844,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 				{
 					sLastChr = subDis[2];
 					mapChr_Chains->insert(std::make_pair(subDis[2],sC));
+					//cout << subDis[2] << endl;
 					ChainsIter = mapChr_Chains->find(subDis[2]);
 				} 
 			else if(sLastChr != subDis[2]) // change chain
@@ -869,17 +854,20 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 					 {
 					  	mapChr_Chains->insert(std::make_pair(subDis[2],sC));
 					  	ChainsIter = mapChr_Chains->find(subDis[2]);
+					  	//cout << subDis[2] << endl;
 					  	if(ChainsIter == mapChr_Chains->end())
 					  	{
 					  		 ifs.close();
+					  		 cout << "Chain file error line " << nline << endl;
 	               return false;
 					  	}
 					 }
 				}
 
-			nSrcStart = stoi(subDis[5]);
-			nDesStart = stoi(subDis[10]);
-			nqSize = stoi(subDis[8]);				
+			nSrcStart = str2int(subDis[5]);
+			nDesStart = str2int(subDis[10]);
+			//nDesEnd = str2int(subDis[11]);
+			nqSize = str2int(subDis[8]);				
 			sStand = subDis[9];
 			c_bag.strDesChr = (subDis[2] == subDis[7])?(""):(subDis[7]);
 			c_bag.bReverse = (sStand == "-")?(true):(false);
@@ -888,7 +876,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			{
 				Replace_char(str_Line," ","\t");// ensemble is space ; ucsc is \t
 				int nCell = nSplitStr2List(str_Line,subDis,"\t");
-				nSpan = stoi(subDis[0]);
+				nSpan = str2int(subDis[0]);
 			  c_bag.nSrcStart = nSrcStart;
 			  c_bag.nSrcEnd = nSrcStart + nSpan;
 			  nDesEnd = nDesStart + nSpan;
@@ -904,14 +892,22 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			    }
 			  if( 3 == nCell )
 			  	{ 
-			        nSrcStart = c_bag.nSrcEnd + stoi(subDis[1]);
-			        nDesStart = nDesEnd + stoi(subDis[2]);
+			        nSrcStart = c_bag.nSrcEnd + str2int(subDis[1]);
+			        nDesStart = nDesEnd + str2int(subDis[2]);
 			    }
 			    MapRet ret =  ChainsIter->second.map_Chain.insert(std::make_pair(c_bag.nSrcStart,c_bag));
+			    	
+			    //if(c_bag.bReverse == false)
+			   // 	cout << c_bag.nSrcStart << "\t" << c_bag.nSrcEnd << "\t+\t" << c_bag.nDesStart << "\t" << c_bag.nDesEnd << endl;
+			   // else
+			   // 	cout << c_bag.nSrcStart << "\t" << c_bag.nSrcEnd << "\t-\t" << c_bag.nDesStart << "\t" << c_bag.nDesEnd << endl;
+			    	
 				  if (!ret.second)
 				   {
-					    ifs.close();
-	            return false;
+					    //ifs.close();
+					    //cout <<sLastChr << endl;
+					    //cout << c_bag.nSrcStart << "\t" << c_bag.nSrcEnd << "----->\t" << c_bag.nDesStart << "\t" << c_bag.nDesEnd << endl;
+	            //return false;
 				   }
 			}
 	}
@@ -961,6 +957,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    				 else
 	    				 	{
 	    				 		sLine.assign(pStart_Line, nLine_len+1);
+	    		        //if(sLine.find("#")== 0)
 	    		        if((*pStart_Line) == '#')
 	    		        	pBag->sResult += sLine;
 	    		        else
@@ -995,8 +992,10 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			                      if(nPos38 != -1)
 			                      	{			                      		
 			                      		sChr = GetChr(nChr);
-			                      		sPos = string2int(nPos38);
+			                      		sPos = int2string(nPos38);
 			                          bConvert = true;
+			                      		//pStart_REF = pChar;
+			                      		//nreflen = nLine_len;
 			                      	}
 	    										}
 	    								}
@@ -1013,8 +1012,9 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			                      int nPos38 = GetPosSectionMakeUp(nPos,&pBag->makeUp[nChr-1]);
 			                      if(nPos38 != -1)
 			                      	{
-			                      		sPosEnd = string2int(nPos38);
+			                      		sPosEnd = int2string(nPos38);
 			                      		pStart_REF = pChar;
+			                      		//bConvert = true;
 			                      		nreflen = nLine_len;
 			                      	}
 			                      else
@@ -1046,7 +1046,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    	} ///////////end switch 
 	    }////////////end for
 	    
-	    ////////////////////////last line without///////////////////////////// 
+	    ////////////////////////最后一行没有\n的数据////////////////////////////// 
 	   if(nLine_len >0)
 	   	{
 	   	  if(bConvert)
@@ -1104,6 +1104,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    				if(bConvert)
 	    					{
 	    						sLine.assign(pStart_REF, nLine_len-nreflen+1);
+	    						//sLine = sChr + "\t" + sPos + "\t"  + sPosEnd + "\t" + sLine;
 	    						sLine = sChr + "\t" + sPos + "\t" + sLine;
 	    						pBag->sResult += sLine;
 	    					}
@@ -1150,7 +1151,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 			                      if(nPos38 != -1)
 			                      	{
 			                      		sChr = GetChr(nChr);
-			                      		sPos = string2int(nPos38);
+			                      		sPos = int2string(nPos38);
 			                      		bConvert = true;
 			                      		pStart_REF = pChar;
 			                      		nreflen = nLine_len;
@@ -1176,7 +1177,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    	} ///////////end switch 
 	    }////////////end for
 	    
-	   ////////////////////////last line without '\n'////////////////////////////// 
+	   ////////////////////////最后一行没有\n的数据////////////////////////////// 
 	   if(nLine_len >0)
 	   	{
 	   	  if(bConvert)
@@ -1205,17 +1206,17 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
   void * TCnvtBed_stand(void* pT)
 	{
 		  THREAD_FILEMMAP_ARG *pBag = (THREAD_FILEMMAP_ARG *)pT;
-			char *pChar = pBag->pStart;
-	    long nlen = pBag->nlen;
+			register char *pChar = pBag->pStart;
+	    register long nlen = pBag->nlen;
 	    map<string,CmySection>* pChr_Sec = pBag->map_Section;
 	    mapChr_Chains_iterator it;
 	    int nChr = -1;
 	    int nspanChr = -1;
 	    int nPos = -1;
 	    int nTCout = 0;
-	    int  nslen =0;
-	    int  nLine_len =0;
-	    int  nreflen =0;  // chr + pos len；
+	    register int  nslen =0;
+	    register int  nLine_len =0;
+	    int  nreflen =0;  // 标记chr + pos 长度；
 	    string sChr = "";
 	    string sPos = "";
 	    string sPosStart = ""; // posend
@@ -1229,12 +1230,13 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    string DesChr2 = "";
 	    
 	    
-	    pBag->sResult.reserve(nlen*1.1); // str mem
+	    pBag->sResult.reserve(nlen*1.1); // 设置好文件内存使用大小
 	    char *pS = pChar;
 	    char *pStart_Line = pChar;
 	    char *pStart_REF = pChar;
 	    
-	    for(;nlen >=0 ;nlen--)
+	   for(;nlen >=0 ;nlen--)
+	   //for(;nlen >=0 ;nlen--)
 	    {
 	    	switch(*pChar++)
 	    	{
@@ -1243,13 +1245,15 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    				if(bConvert)
 	    					{
 	    						sLine.assign(pStart_REF, nLine_len-nreflen+1);
+	    						//cout << sLine << endl;
 	    						sLine = sChr + "\t" + sPosStart + "\t"  + sPosEnd + "\t" + sLine;
 	    						pBag->sResult += sLine;
 	    					}
 	    				 else
 	    				 	{
 	    				 		sLine.assign(pStart_Line, nLine_len+1);
-	    		        if(sLine.find("#")== 0)
+	    		        //if(sLine.find("#")== 0)
+	    		        if(sLine[0]== '#')
 	    		        	pBag->sResult += sLine;
 	    		        else
 	    		        	pBag->sFail += sLine;
@@ -1264,46 +1268,52 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    			{
 	    				nTCout ++;
 	    				nLine_len++;
-	    				switch(nTCout)
+	    				
+	    				if(nTCout<=3)
 	    				{
-	    					case 1:
-	    						sChr.assign(pS,nslen);
-	    					  break;
-	    					case 2:
-	    						{
-	    							sPosStart.assign(pS,nslen);
-	    							if( sChr != sLastChar )
-	    								{
-	    									sLastChar = sChr;
-	    									it = pChr_Sec->find(sChr);
-	    							    if(it == pChr_Sec->end())// chrx //x
-	    								     it = pChr_Sec->find("chr"+sChr);
-	    								  if(it == pChr_Sec->end())// x
-	    								  	{
-	    								  		string s = sChr;
-	    								  		Replace_char(s,"chr","");
-	    								  		it = pChr_Sec->find(s);
-	    								  	}    
-	    								}	
-	    						  break;
-	    						}
-	    					case 3:
-	    						{
-	    							sPosEnd.assign(pS,nslen);
-								if(it != pChr_Sec->end())
-								{
-									if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
-	    							         {
-			                                                      pStart_REF = pChar;
-			                                                      nreflen = nLine_len;
-			                                                      bConvert = true;
-			                                                  }
-								}
-	    							
-	    						  break;
-	    						}
-	    					default:
-	    						break;
+	    			      switch(nTCout)
+	    			    	{
+	    					     case 1:
+	    						    sChr.assign(pS,nslen);
+	    					      break;
+	    					     case 2:
+	    						     {
+	    							     sPosStart.assign(pS,nslen);
+	    							     if( sChr != sLastChar )
+	    								     {
+	    									     sLastChar = sChr;
+	    									     it = pChr_Sec->find(sChr);
+	    							         if(it == pChr_Sec->end())// chrx //x
+	    								          it = pChr_Sec->find("chr"+sChr);
+	    								       if(it == pChr_Sec->end())// x
+	    								  	    {
+	    								  		     string s = sChr;
+	    								  		     Replace_char(s,"chr","");
+	    								  		     it = pChr_Sec->find(s);
+	    								  	    }    
+	    								     }	
+	    						       break;
+	    						     } 
+	    					      case 3:
+	    						    {
+	    							     sPosEnd.assign(pS,nslen);
+	    							     //cout << sChr << "\t" << sPosStart << "\t" << sPosEnd << endl;
+	    							   if(it != pChr_Sec->end()){
+	    								    if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
+	    							      {
+			                      pStart_REF = pChar;
+			                      nreflen = nLine_len;
+			                      bConvert = true;
+			                  }
+	    								
+	    							  }
+	    						   break;
+	    						    }
+	    					    default:
+	    							   break;
+	    						
+	    				    }
+	    						
 	    				}
 	    				pS = pChar;
 	    				nslen =0;
@@ -1319,7 +1329,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    	} ///////////end switch 
 	    }////////////end for
 	    
-	   ////////////////////////////////////////////////////// 
+	   ////////////////////////最后一行没有\n的数据////////////////////////////// 
 	   if(nLine_len >0)
 	   	{
 	   	  if(bConvert)
@@ -1339,9 +1349,6 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	   	}
 	   //////////////////////////////////////////////////////// 
 	    
-	    
-	    
-	   
 	   string strRe = " finish \n";
 	   char *cSt =(char *) strRe.data();
 	  return (void *)cSt;
@@ -1350,8 +1357,8 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
   void * TCnvtVCF_stand(void* pT)
 	{
 		  THREAD_FILEMMAP_ARG *pBag = (THREAD_FILEMMAP_ARG *)pT;
-			char *pChar = pBag->pStart;
-	    long nlen = pBag->nlen;
+			register char *pChar = pBag->pStart;
+	    register long nlen = pBag->nlen;
 	    map<string,CmySection>* pChr_Sec = pBag->map_Section;
 	    mapChr_Chains_iterator it;
 	    
@@ -1359,16 +1366,16 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    int nspanChr = -1;
 	    int nPos = -1;
 	    int nTCout = 0;
-	    int  nslen =0;
-	    int  nLine_len =0;
-	    int  nreflen =0;  // chr + pos
+	    register int  nslen =0;
+	    register  int  nLine_len =0;
+	    int  nreflen =0;  // 标记chr + pos 长度；
 	    
 	    string sChr = "";
 	    string sPos = "";
 	    string sLastChar = "";
 	    string sLine = "";
 	    bool  bConvert = false;
-	    pBag->sResult.reserve(nlen); //
+	    pBag->sResult.reserve(nlen); // 设置好文件内存使用大小
 	    
 	    char *pS = pChar;
 	    char *pStart_Line = pChar;
@@ -1431,18 +1438,17 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    								  		Replace_char(s,"chr","");
 	    								  		it = pChr_Sec->find(s);
 	    								  	}    
-	    								}
-								
-								if(it != pChr_Sec->end())
-								{
-									if(bCoordinate(sChr,sPosStart,sPosEnd,&it->second))
-	    							         {
-			                                                      pStart_REF = pChar;
-			                                                      nreflen = nLine_len;
-			                                                      bConvert = true;
-			                                                  }
-								}
-	    						
+	    								}	
+	    								
+	    								if(it != pChr_Sec->end()){
+	    								
+	    								if(bCoordinate(sChr,sPos,&it->second))
+	    							   {
+			                    pStart_REF = pChar;
+			                    nreflen = nLine_len;
+			                    bConvert = true;
+			                 }
+			             }
 	    						  break;
 	    						}
 	    					default:
@@ -1462,7 +1468,7 @@ int GetMakeupChain(string chianFile,std::map<int,int> &map_Chain_1v1,std::map<in
 	    	} ///////////end switch 
 	    }////////////end for
 	    
-	  //////////////////////////////////////////////////// 
+	  ////////////////////////最后一行没有\n的数据////////////////////////////// 
 	   if(nLine_len >0)
 	   	{
 	   	  if(bConvert)
@@ -1522,14 +1528,13 @@ bool Cnvt_File(string sSrcfile,string sSectionDir,string sDespath,string &sError
 	///////////////////////////////////////////intital convert section/////////////////////////////////////
 	
 	for (int i= 0;i<24 ;i++){
-		strSection = "chr"+ string2int(i+1) + "_convert.dat";
+		strSection = "chr"+ int2string(i+1) + "_convert.dat";
 		if (i == 22)
 			strSection =  "chrX_convert.dat";
 		else if (i == 23)
 			strSection =  "chrY_convert.dat";
 		strSection = sSectionDir + "/" + strSection;
-		
-		Replace_char(sSectionDir,"//","/");
+		Replace_char(strSection,"//","/");
 		if(bSrcVersion == true){ //38--》37
 				if(GetMakeupChain_Reverse(strSection,mysection[i].map_Chain_1V1,mysection[i].map_Chain) <= 0){
 					sError = "Intial Genegos-chains error";
@@ -1537,6 +1542,8 @@ bool Cnvt_File(string sSrcfile,string sSectionDir,string sDespath,string &sError
 				}
 		}
 		else{ // 37-->38
+			
+			//cout << strSection << endl;
 			if(GetMakeupChain(strSection,mysection[i].map_Chain_1V1,mysection[i].map_Chain) <= 0){
 					sError = "Intial Genegos-chains error";
 			    return false;
@@ -1568,7 +1575,7 @@ bool Cnvt_File(string sSrcfile,string sSectionDir,string sDespath,string &sError
 	if ((pFSpecial = fopen(unmapFile.c_str(),"w+")) == NULL){
 		sError = "Creat file error\n";
 		if (fclose (pFile) != 0)
-			perror("Error occurs when close file"); 
+			perror("Error occurs when close file"); //报告相应错误
 		
 		return false;
 	}
@@ -1691,6 +1698,10 @@ bool Cnvt_File_Stand(string sSrcfile,string sChainFile,string sDespath,string &s
 	        sError = "initialize chains error\n"; 
 	        return false; 
 	 	}
+	 	
+	 	//cout << "begin change \n";
+	 	//map<string,CmySection>::iterator iiit = mapChr_Chains.begin();
+	 	
 	//////////////////////////////////////////////MAKE DES FILES////////////////////////////////////////////////////////////
 	
 	string sFilename = sSrcfile.substr(sSrcfile.rfind('/')+1,sSrcfile.length() - sSrcfile.rfind('/') -1 );
@@ -1722,8 +1733,7 @@ bool Cnvt_File_Stand(string sSrcfile,string sChainFile,string sDespath,string &s
 		return false;
 	}
 	
-	 
-	 long nPerThread = (nFilesize >4096)? (nFilesize/ncpuNum):nFilesize; //split mem
+	 long nPerThread = (nFilesize >40960)? (nFilesize/ncpuNum):nFilesize; //split mem
 	 long nLeft = nFilesize;
 	 char *pStart = mapped;
 	 long  nlen = 0;
@@ -1757,7 +1767,8 @@ bool Cnvt_File_Stand(string sSrcfile,string sChainFile,string sDespath,string &s
 			 Thread_Check[i].nlen = nlen;
 	  }
 	  
-	  	 
+	  
+	  //nRealThread = 2;
 	   for (int i=0;i< nRealThread;i++)
 		 {
 			int nerror = 0;
@@ -1807,7 +1818,9 @@ bool Cnvt_File_Stand(string sSrcfile,string sChainFile,string sDespath,string &s
 int main(int arg,char *args[])
 {
 	 if(arg <3){
-	 		cout << "Input error! \n";
+	 		//cout << "Input error! \n";
+	 		cout << sHelp << endl;
+			cout << sExample;
 	 		return 0;
 	 	}
 
@@ -1825,11 +1838,17 @@ int main(int arg,char *args[])
    			     if(true ==  is_file_exist(sGet)){
 			 	       if(sGet.find(".VCF")== -1 && sGet.find(".vcf")== -1 && sGet.find(".bed")== -1&& sGet.find(".BED")== -1){
 			 			       cout << "Source file format error < expectd format is : \".vcf\" or \".bed\"> "<< endl;
+			 			       cout << sHelp << endl;
+			 			       cout << sExample << endl;
 			 		         return -1;
 			 		     }
 				        strSrc = sGet;
 			        }
-			       else{ cout << "Source file not exist " << sGet << endl; return -1;} 
+			       else{ cout << "Source file not exist " << sGet << endl; 
+			       	     cout << sHelp << endl;
+			 			       cout << sExample << endl;
+			 			       return -1;
+			 			     } 
    		break;
    		case 2:
    			     if(true == is_dir_exist(sGet)) strDespath = sGet;
@@ -1837,7 +1856,11 @@ int main(int arg,char *args[])
    		break;
    		case 3:
    			     if(true == is_dir_exist(sGet) || true ==  is_file_exist(sGet) )  sSectionDir = sGet;
-			       else { cout << "chains file not exist " << sGet << endl; return -1;}
+			       else { cout << "chains file not exist " << sGet << endl;
+			       	     cout << sHelp << endl;
+			 			       cout << sExample << endl; 
+			 			       return -1;
+			 			      }
    		break;
    		case 4:
    			     if(sGet == "-R" || sGet == "-r" ) bSrcVersion = true;
