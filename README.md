@@ -8,6 +8,7 @@ converting genome coordinate from  GRCh37 to GRCh38.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Building and installing Genegos
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Currently, Genegos only runs in the Linux environment, and you will need the g++ (GCC 4.8.5 or higher) compiler to compile the source code
 To install from a tar.gz distribution:
   1. Run "./configure", with option for alternative directory using --prefix=/where/you/want/it/installed.
   2. Run "make".
